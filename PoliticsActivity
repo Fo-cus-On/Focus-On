@@ -1,0 +1,188 @@
+ackage com.czorange.focus_on;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class PoliticsActivity extends Activity {
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_politics);
+
+		lvPolitics = (ListView) findViewById(R.id.listView1);
+
+		adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1);
+		lvPolitics.setAdapter(adapter);
+
+		lvPolitics.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+			                        long arg3) {
+				switch (arg2) {
+					case 0:
+						Uri uri = Uri.parse(newsurl1);
+						Intent it = new Intent(Intent.ACTION_VIEW, uri);
+						startActivity(it);
+						break;
+					case 1:
+						Uri uri2 = Uri.parse(newsurl2);
+						Intent it2 = new Intent(Intent.ACTION_VIEW, uri2);
+						startActivity(it2);
+						break;
+					case 2:
+						Uri uri3 = Uri.parse(newsurl3);
+						Intent it3 = new Intent(Intent.ACTION_VIEW, uri3);
+						startActivity(it3);
+						break;
+					case 3:
+						Uri uri4 = Uri.parse(newsurl4);
+						Intent it4 = new Intent(Intent.ACTION_VIEW, uri4);
+						startActivity(it4);
+						break;
+					case 4:
+						Uri uri5 = Uri.parse(newsurl5);
+						Intent it5 = new Intent(Intent.ACTION_VIEW, uri5);
+						startActivity(it5);
+						break;
+					case 5:
+						Uri uri6 = Uri.parse(newsurl6);
+						Intent it6 = new Intent(Intent.ACTION_VIEW, uri6);
+						startActivity(it6);
+						break;
+				}
+			}
+		});
+
+		update1();
+		update2();
+		update3();
+		update4();
+		update5();
+		update6();
+
+	}
+
+	private void update1(){
+		AsyncHttpClient client = new AsyncHttpClient();
+		RequestParams params = new RequestParams();
+		params.put("database", database);
+		String url1 = "http://119.29.140.227/focus/update1.php";
+
+		client.post(url1, params, new AsyncHttpResponseHandler() {
+			@Override
+			public void onSuccess(int i, Header[] headers, byte[] bytes) {
+				String response = new String(bytes);
+				Log.e("debug", response);
+				JSONObject object = null;
+				try {
+					object = new JSONObject(response);
+					newstitle1 = object.getString("newstitle");
+					newsurl1 = object.getString("newsurl");
+					adapter.add(newstitle1);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+
+			}
+		});
+	}
+
+	private void update2(){
+		AsyncHttpClient client = new AsyncHttpClient();
+		RequestParams params = new RequestParams();
+		params.put("database", database);
+		String url2 = "http://119.29.140.227/focus/update2.php";
+
+		client.post(url2, params, new AsyncHttpResponseHandler() {
+			@Override
+			public void onSuccess(int i, Header[] headers, byte[] bytes) {
+				String response = new String(bytes);
+				Log.e("debug", response);
+				JSONObject object = null;
+				try {
+					object = new JSONObject(response);
+					newstitle2 = object.getString("newstitle");
+					newsurl2 = object.getString("newsurl");
+					adapter.add(newstitle2);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+
+			}
+		});
+	}
+
+	private void update3(){
+		AsyncHttpClient client = new AsyncHttpClient();
+		RequestParams params = new RequestParams();
+		params.put("database", database);
+		String url3 = "http://119.29.140.227/focus/update3.php";
+
+		client.post(url3, params, new AsyncHttpResponseHandler() {
+			@Override
+			public void onSuccess(int i, Header[] headers, byte[] bytes) {
+				String response = new String(bytes);
+				Log.e("debug", response);
+				JSONObject object = null;
+				try {
+					object = new JSONObject(response);
+					newstitle3 = object.getString("newstitle");
+					newsurl3 = object.getString("newsurl");
+					adapter.add(newstitle3);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+
+			}
+		});
+	}
+
+	private void update4(){
+		AsyncHttpClient client = new AsyncHttpClient();
+		RequestParams params = new RequestParams();
+		params.put("database", database);
+		String url4 = "http://119.29.140.227/focus/update4.php";
+
+		client.post(url4, params, new AsyncHttpResponseHandler() {
+			@Override
+			public void onSuccess(int i, Header[] headers, byte[] bytes) {
+				String response = new String(bytes);
+				Log.e("debug", response);
+				JSONObject object = null;
+				try {
+					object = new JSONObject(response);
+					newstitle4 = object.getString("newstitle");
+					newsurl4 = object.getString("newsurl");
+					adapter.add(newstitle4);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
