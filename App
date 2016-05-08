@@ -1,0 +1,12 @@
+package com.czorange.focus_on;
+
+import android.app.Application;
+
+/**
+ * Created by Essais on 2016/3/17.
+ * 判断是否已登录
+ */
+public class App extends Application{
+	public static boolean isLogin = false;
+	public static String login_username = null;
+}
