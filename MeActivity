@@ -1,34 +1,39 @@
 package com.czorange.focus_on;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MeActivity extends AppCompatActivity {
-
-	Db db1 =new Db();
-	String c=null;
-	String d=null;
-	String e=null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_me);
+		information();
 
 		Button pagehome = (Button) findViewById(R.id.btn_pagehome);
 		Button search = (Button) findViewById(R.id.btn_search);
 		Button Messages = (Button) findViewById(R.id.btn_Messages);
-		Button save = (Button) findViewById(R.id.btn_save);
+		save = (Button) findViewById(R.id.btn_save);
+		exit = (Button) findViewById(R.id.btn_exit);
 
-		EditText ID = (EditText) findViewById(R.id.et_ID);
-		EditText Motto = (EditText) findViewById(R.id.et_motto);
-		EditText Label = (EditText) findViewById(R.id.et_label);
+		etID = (EditText) findViewById(R.id.et_ID);
+		etMotto = (EditText) findViewById(R.id.et_motto);
+		etLabel = (EditText) findViewById(R.id.et_label);
 
 		pagehome.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -56,27 +61,98 @@ public class MeActivity extends AppCompatActivity {
 				MeActivity.this.finish();
 			}
 		});
+
+		exit.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				App.isLogin = false;
+				Toast.makeText(MeActivity.this, "退出成功，返回主页面", Toast.LENGTH_LONG).show();
+				startActivity(new Intent(MeActivity.this, MainActivity.class));
+				MeActivity.this.finish();
+			}
+		});
+
+		save.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String userid = etID.getText().toString();
+				String motto = etMotto.getText().toString();
+				String label = etLabel.getText().toString();
+
+				AsyncHttpClient client = new AsyncHttpClient();
+				RequestParams params = new RequestParams();
+				params.put("username", username);
+				params.put("userid", userid);
+				params.put("motto", motto);
+				params.put("label", label);
+				String url = "http://119.29.140.227/focus/update.php";
+
+				client.post(url, params, new AsyncHttpResponseHandler() {
+					@Override
+					public void onSuccess(int i, Header[] headers, byte[] bytes) {
+						String response = new String(bytes);
+						Log.e("debug", response);
+						JSONObject object = null;
+						try{
+							object = new JSONObject(response);
+							String status = object.getString("status");
+							if (status.equals("same")) {
+								Toast.makeText(MeActivity.this, "您未做任何修改。", Toast.LENGTH_LONG).show();
+							}else if (status.equals("success")) {
+								Toast.makeText(MeActivity.this, "修改成功。", Toast.LENGTH_LONG).show();
+							}else{
+								Toast.makeText(MeActivity.this, "出现错误。", Toast.LENGTH_LONG).show();
+							}
+						}catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+
+					@Override
+					public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+						Toast.makeText(MeActivity.this, "网络错误，请重试", Toast.LENGTH_LONG).show();
+					}
+				});
+			}
+		});
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.menu_me, menu);
-		return true;
+	private void information(){
+		AsyncHttpClient client = new AsyncHttpClient();
+		RequestParams params = new RequestParams();
+		params.put("username", username);
+		String url2 = "http://119.29.140.227/focus/information.php";
+
+		client.post(url2, params, new AsyncHttpResponseHandler() {
+			@Override
+			public void onSuccess(int i, Header[] headers, byte[] bytes) {
+				String response = new String(bytes);
+				Log.e("debug", response);
+				JSONObject object = null;
+				try{
+					object = new JSONObject(response);
+					userid2 = object.getString("userid");
+					motto2 = object.getString("motto");
+					label2 = object.getString("label");
+
+					etID.setText(userid2);
+					etMotto.setText(motto2);
+					etLabel.setText(label2);
+
+				}catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void onFailure(int i, Header[] headers, byte[] bytes, Throwable throwable) {
+				Toast.makeText(MeActivity.this, "网络错误，请重试", Toast.LENGTH_LONG).show();
+			}
+		});
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-
-		//noinspection SimplifiableIfStatement
-		if (id == R.id.action_settings) {
-			return true;
-		}
-
-		return super.onOptionsItemSelected(item);
-	}
+	private EditText etID,etMotto,etLabel;
+	private String username = App.login_username;
+	private String userid2,motto2,label2;
+	private Button save,exit;
 }
