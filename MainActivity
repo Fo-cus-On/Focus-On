@@ -1,49 +1,39 @@
 package com.czorange.focus_on;
 
+import android.app.TabActivity;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TabHost;
 
-public class MainActivity extends AppCompatActivity {
+/**  需联网的版本
+ *
+ */
+public class MainActivity extends TabActivity {
 
-	Db db1 =new Db();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		//创建或打开数据库
-		try{
-			SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase("/data/data/com.czorange.focus_on/db.db",null);
-			db1.createtable();
-		}catch (Exception e) {
-			e.getMessage();}
+		TabHost mTabHost = getTabHost();
+		//新建一个tab并设置它的，Tag,标题，图标，内容
+		mTabHost.addTab(mTabHost.newTabSpec("Politics").setIndicator("政治", getResources().getDrawable(android.R.drawable.arrow_down_float)).setContent(new Intent(this, PActivityGroup.class)));
+		mTabHost.addTab(mTabHost.newTabSpec("Livelihood").setIndicator("民生", getResources().getDrawable(android.R.drawable.arrow_down_float)).setContent(new Intent(this, LiActivityGroup.class)));
+		mTabHost.addTab(mTabHost.newTabSpec("Es").setIndicator("文体", getResources().getDrawable(android.R.drawable.arrow_down_float)).setContent(new Intent(this, EActivityGroup.class)));
+		mTabHost.addTab(mTabHost.newTabSpec("Learning").setIndicator("学习", getResources().getDrawable(android.R.drawable.arrow_down_float)).setContent(new Intent(this, LeActivityGroup.class)));
+		mTabHost.setCurrentTab(0);//设置初始选中状态为第一个tab
 
-
-		//tab各页面命名
-		tabHosts.addTab(tabHosts.newTabSpec("tabPolitics").setIndicator("政治").setContent(R.id.tab1));
-		tabHosts.addTab(tabHosts.newTabSpec("tabLivelihood").setIndicator("民生").setContent(R.id.tab2));
-		tabHosts.addTab(tabHosts.newTabSpec("tabEs").setIndicator("文体").setContent(R.id.tab3));
-		tabHosts.addTab(tabHosts.newTabSpec("tabLearning").setIndicator("学习").setContent(R.id.tab4));
-
-
-		//貌似是叫初始化，忘了=。=
 		Button search = (Button) findViewById(R.id.btn_search);
 		Button Messages = (Button) findViewById(R.id.btn_Messages);
 		Button Me = (Button) findViewById(R.id.btn_me);
-		tabHosts = (TabHost) findViewById(R.id.tabHost);
-		tabHosts.setup();
 
-		//添加监听器
 		search.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(MainActivity.this,searchActivity.class);  //页面跳转（本类.this,要跳转的类.class）
+				Intent intent = new Intent(MainActivity.this,searchActivity.class);
 				startActivity(intent);
 			}
 		});
@@ -54,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 				if (App.isLogin) {
 					Intent intent = new Intent(MainActivity.this, MessageActivity.class);
 					startActivity(intent);
-					MainActivity.this.finish();//结束本类
+					MainActivity.this.finish();
 				}
 				else{
 					Intent intent = new Intent(MainActivity.this, unloginActivity.class);
@@ -78,6 +68,4 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 	}
-
-	private TabHost tabHosts; //也是初始化
 }
